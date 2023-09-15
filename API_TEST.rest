@@ -1,4 +1,45 @@
 ###
 
-GET http://localhost:8080/users/userFetch
+POST http://localhost:8080/auth/login
+Content-Type: application/json
 
+
+  {
+  "firstName": "John",
+  "lastName": "Doe",
+  "phoneNumber": "1234567890",
+  "email": "admin12t@example.com",
+  "password": "password123",
+  "gender": "Male",
+  "role": "Admin"
+  }
+
+###
+
+# Login and get token
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "1234Admin"
+}
+
+###
+
+# Access Protected route
+
+GET http://localhost:8080/settings/user/fetchSettings
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJVMSIsImlhdCI6MTY5NDY3MzkwMCwiZXhwIjoxNjk0Njc3NTAwfQ.R2r8nVs1QL6XvcYsDe-cNOdh31xKwElGvsKu4Cl1Ht8  
+
+
+
+###
+
+PUT http://localhost:8080/settings/user/updateLastName
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJVMSIsImlhdCI6MTY5NDY3MzkwMCwiZXhwIjoxNjk0Njc3NTAwfQ.R2r8nVs1QL6XvcYsDe-cNOdh31xKwElGvsKu4Cl1Ht8
+
+{
+  "lastName": "New Dela Cruz"
+}
