@@ -12,6 +12,18 @@ router.post("/createMedicine", async (req, res) => {
     const { product, category, quantity, expirationDate, restockDate, note } =
       req.body;
 
+    if (!product || !category || !quantity || !expirationDate || !restockDate) {
+      console.log("Missing required fields");
+      return res.status(400).json({
+        error:
+          "Missing required fields: product, category, quantity, expirationDate, restockDate",
+      });
+    }
+
+    // Explicitly creating Date objects
+    const expiration = new Date(expirationDate);
+    const restock = new Date(restockDate);
+
     // Calculate stockLevel based on quantity
     let stockLevel = "Low";
     if (quantity > 50) {
@@ -26,17 +38,17 @@ router.post("/createMedicine", async (req, res) => {
       category,
       quantity,
       stockLevel,
-      expirationDate,
-      restockDate,
+      expirationDate: expiration,
+      restockDate: restock,
       note,
     });
 
     // Save the medicine document to the database
     await medicine.save();
-
     res.status(201).json(medicine);
   } catch (error) {
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Internal server error:", error);
+    res.status(500).json({ error: "Internal server error: " + error.message });
   }
 });
 
