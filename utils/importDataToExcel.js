@@ -1,6 +1,6 @@
 const ExcelJS = require("exceljs");
 
-async function parseExcelToJson(buffer) {
+async function parseExcelToJson(buffer, headerMapper) {
   try {
     const workbook = new ExcelJS.Workbook();
     await workbook.xlsx.load(buffer);
@@ -8,10 +8,13 @@ async function parseExcelToJson(buffer) {
 
     let headers = {};
     let data = [];
+
     worksheet.eachRow((row, rowNumber) => {
       if (rowNumber === 1) {
         row.eachCell((cell, colNumber) => {
-          headers[colNumber] = cell.value;
+          headers[colNumber] = headerMapper
+            ? headerMapper(cell.value)
+            : cell.value;
         });
       } else {
         let rowData = {};
