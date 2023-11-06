@@ -2,15 +2,20 @@ const mongoose = require("mongoose");
 
 const dengueSchema = new mongoose.Schema(
   {
-    studentProfile: {
+    classEnrollment: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "StudentProfile",
+      ref: "ClassEnrollment",
       required: true,
     },
-    dateOfOnset: { type: Date, required: true },
-    dateOfAdmission: { type: Date, required: true },
+    dateOfOnset: { type: Date },
+    dateOfAdmission: { type: Date },
     hospitalAdmission: { type: String, required: true },
-    dateOfDischarge: { type: Date, required: true },
+    dateOfDischarge: { type: Date },
+    status: {
+      type: String,
+      enum: ["Active", "Archived", "Inactive"],
+      default: "Active",
+    },
   },
   { timestamps: true }
 );
