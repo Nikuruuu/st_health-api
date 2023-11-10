@@ -41,9 +41,22 @@ router.post("/create", authenticateMiddleware, async (req, res) => {
     const populatedEnrollment = await ClassEnrollment.findById(
       newEnrollment._id
     )
-      .populate("student")
-      .populate("classProfile")
-      .populate("academicYear")
+      .populate({
+        path: "student",
+        model: "StudentProfile", // Assuming you have a StudentProfile model
+      })
+      .populate({
+        path: "classProfile",
+        model: "ClassProfile", // Your ClassProfile model
+        populate: {
+          path: "faculty",
+          model: "FacultyProfile", // To populate the faculty details from FacultyProfile model
+        },
+      })
+      .populate({
+        path: "academicYear",
+        model: "AcademicYear", // Assuming you have an AcademicYear model
+      })
       .exec();
 
     res.status(201).json({ newEnrollment: populatedEnrollment });
@@ -127,7 +140,7 @@ router.get(
     try {
       const gradesAndSections = await ClassProfile.find({
         status: "Active",
-      }).select("grade section -_id");
+      }).select("grade section lastName firstName -_id");
 
       if (!gradesAndSections || gradesAndSections.length === 0) {
         return res
@@ -178,9 +191,22 @@ router.put("/update/:lrn", authenticateMiddleware, async (req, res) => {
     const populatedEnrollment = await ClassEnrollment.findById(
       enrollmentToUpdate._id
     )
-      .populate("student")
-      .populate("academicYear")
-      .populate("classProfile");
+      .populate({
+        path: "student",
+        model: "StudentProfile", // Assuming you have a StudentProfile model
+      })
+      .populate({
+        path: "academicYear",
+        model: "AcademicYear", // Assuming you have an AcademicYear model
+      })
+      .populate({
+        path: "classProfile",
+        model: "ClassProfile", // You have this model
+        populate: {
+          path: "faculty",
+          model: "FacultyProfile", // To get the faculty details
+        },
+      });
 
     res.status(200).json({
       message: "Updated successfully",
@@ -210,6 +236,15 @@ router.put("/softDelete/:id", authenticateMiddleware, async (req, res) => {
     res.status(200).json({ message: "Soft deleted successfully", enrollment });
   } catch (error) {
     res.status(400).json({ error: error.message });
+  }
+});
+
+router.get("/count", async (req, res) => {
+  try {
+    const count = await ClassEnrollment.countDocuments({ status: "Active" });
+    res.json({ count });
+  } catch (error) {
+    res.status(500).send("Server Error");
   }
 });
 
